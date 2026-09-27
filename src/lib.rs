@@ -6,21 +6,21 @@
 //!
 //! The crate is split into modules that each own one concern:
 //!
-//! - [`config`] — settings, their file location, and how environment variables
+//! - `config` — settings, their file location, and how environment variables
 //!   layer on top of them.
-//! - [`platform`] — which operating system and distribution we are on, and what
+//! - `platform` — which operating system and distribution we are on, and what
 //!   its package manager commands look like.
-//! - [`shell`] — the catalogue of known commands, the classifier that decides
+//! - `shell` — the catalogue of known commands, the classifier that decides
 //!   whether input is a command, and the runner that executes it.
-//! - [`safety`] — risk classification and confirmation policy for commands that
+//! - `safety` — risk classification and confirmation policy for commands that
 //!   could destroy data.
-//! - [`placeholder`] — detection of unfilled template placeholders in a command.
-//! - [`response`] — the typed shapes an agent can return.
-//! - [`llm`] — provider abstraction, the three specialised agents, and their
+//! - `placeholder` — detection of unfilled template placeholders in a command.
+//! - `response` — the typed shapes an agent can return.
+//! - `llm` — provider abstraction, the three specialised agents, and their
 //!   prompts.
-//! - [`tui`] — terminal rendering: theme, spinner, markdown, line editing.
-//! - [`app`] — orchestration: the REPL loop and the flows it drives.
-//! - [`error`] — the single error type shared by the library.
+//! - `tui` — terminal rendering: theme, spinner, markdown, line editing.
+//! - `app` — orchestration: the REPL loop and the flows it drives.
+//! - `error` — the single error type shared by the library.
 
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
