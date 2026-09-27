@@ -9,7 +9,7 @@
 //!   its package manager commands look like.
 //! - [`shell`](mod@shell) — the catalogue of known commands, the classifier that decides
 //!   whether input is a command, and the runner that executes it.
-//! - `safety` — risk classification and confirmation policy for commands that
+//! - [`safety`](mod@safety) — risk classification and confirmation policy for commands that
 //!   could destroy data.
 //! - `placeholder` — detection of unfilled template placeholders in a command.
 //! - `response` — the typed shapes an agent can return.
@@ -28,6 +28,7 @@
 pub mod config;
 pub mod error;
 pub mod platform;
+pub mod safety;
 pub mod shell;
 
 /// The version of the `shx` binary, taken from the crate manifest.
