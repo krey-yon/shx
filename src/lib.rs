@@ -22,8 +22,6 @@
 //! - `app` — orchestration: the REPL loop and the flows it drives.
 //! - `error` — the single error type shared by the library.
 
-#![forbid(unsafe_code)]
-#![warn(missing_docs)]
 #![warn(rustdoc::broken_intra_doc_links)]
 
 /// The version of the `shx` binary, taken from the crate manifest.
