@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish binaries to GitHub Releases
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: macos-latest
+            target: x86_64-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.92.0
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="${{ matrix.target }}"
+          BINARY="target/$TARGET/release/shx"
+          ARCHIVE="shx-$TARGET.tar.gz"
+
+          STAGE="target/$TARGET/release/shx-linux"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE"
+          install -m 755 "$BINARY" "$STAGE/shx"
+          cp README.md LICENSE scripts/install.sh scripts/uninstall.sh "$STAGE/"
+
+          tar -czf "$ARCHIVE" -C "target/$TARGET/release" shx-linux
+          echo "ARCHIVE=$ARCHIVE"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            shx-*.tar.gz
+          generate_release_notes: true
