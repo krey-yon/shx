@@ -23,14 +23,10 @@ pub fn looks_like_path(input: &str) -> bool {
         return false;
     };
 
-    // A leading `~` is a path as well, and it is how a user writes one.
     if first.starts_with('~') {
         return true;
     }
 
-    // A path containing a separator but no leading dot is ambiguous: `src/main.rs`
-    // is more often an argument to something else. Requiring a leading `./`,
-    // `../` or `/` keeps that ambiguity on the model's side.
     first.starts_with("./")
         || first.starts_with("../")
         || first.starts_with('/')
@@ -98,15 +94,12 @@ mod tests {
 
     #[test]
     fn a_bare_path_with_a_separator_is_left_to_the_model() {
-        // `src/main.rs` as the first word is far more often an argument than a
-        // command, so this must not claim it.
         assert!(!looks_like_path("src/main.rs"));
         assert!(!looks_like_path("usr/local/bin/thing"));
     }
 
     #[test]
     fn a_leading_dot_that_is_not_a_path_prefix_is_not_a_path() {
-        // `.gitignore` is a filename, not a command.
         assert!(!looks_like_path(".gitignore"));
         assert!(!looks_like_path(".editorconfig"));
     }
@@ -139,8 +132,6 @@ mod tests {
 
     #[test]
     fn a_dotted_filename_is_not_treated_as_a_script() {
-        // The extension check must not fire on `.gitignore` just because the
-        // name contains a dot.
         assert!(!looks_like_script(".gitignore"));
     }
 }

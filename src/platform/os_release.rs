@@ -249,9 +249,6 @@ ID_LIKE=debian
 
     #[test]
     fn an_empty_value_is_kept_as_empty_not_dropped() {
-        // Some distributions emit an empty ID. Keeping it means the caller gets
-        // an honest "unsupported distribution with no id" instead of a confusing
-        // "no such key".
         let parsed = OsRelease::parse("ID=\nNAME=Something\n").expect("should parse");
         assert_eq!(parsed.id(), Some(""));
     }

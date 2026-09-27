@@ -111,8 +111,6 @@ impl WorkingDirectory {
     pub fn change_to(&mut self, target: &str) -> Result<&Path> {
         let trimmed = target.trim();
 
-        // `cd` with no argument goes home, which is what every other shell does
-        // and is not something the model has to be asked.
         let requested = if trimmed.is_empty() {
             dirs::home_dir()
         } else if let Some(rest) = trimmed.strip_prefix('~') {
@@ -136,8 +134,6 @@ impl WorkingDirectory {
             return Err(ShxError::io(trimmed, no_home_directory()));
         };
 
-        // canonicalize also resolves symlinks and `..`, and fails on anything
-        // that is not there, which is exactly the check we want.
         let resolved =
             std::fs::canonicalize(&requested).map_err(|source| ShxError::io(&requested, source))?;
 
@@ -217,8 +213,6 @@ mod tests {
         let mut directory = WorkingDirectory::new(temporary.path());
         directory.change_to("inner").expect("inner exists");
 
-        // change_to canonicalises, so compare canonicalised paths: on macOS
-        // /var is a symlink to /private/var and the strings differ.
         let resolved = std::fs::canonicalize(&inner).expect("canonicalize");
         assert_eq!(directory.path(), resolved);
     }
@@ -326,7 +320,6 @@ mod tests {
 
     #[test]
     fn cd_target_ignores_extra_words() {
-        // `cd a b` is a shell error, not something to guess about.
         assert_eq!(cd_target("cd a b").as_deref(), Some("a"));
     }
 }

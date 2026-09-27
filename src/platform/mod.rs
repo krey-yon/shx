@@ -7,6 +7,7 @@
 
 pub mod distribution;
 pub mod os_release;
+pub mod package_commands;
 
 pub use distribution::Distribution;
 
@@ -220,9 +221,6 @@ impl fmt::Display for Platform {
 /// global in the crate.
 static CURRENT: LazyLock<Platform> = LazyLock::new(|| {
     Platform::detect().unwrap_or_else(|_| {
-        // Detection failing means an OS we have never heard of. Falling back to the
-        // compile-time target keeps the tool usable rather than panicking, and the
-        // package-manager suggestions simply stop.
         Platform::for_system(std::env::consts::OS).unwrap_or_else(|_| Platform {
             system: std::env::consts::OS.to_owned(),
             distribution: Distribution::Unknown,
@@ -289,8 +287,6 @@ mod tests {
 
     #[test]
     fn detection_succeeds_on_the_machine_running_the_tests() {
-        // Not portable in the sense of a fixed answer, but it must never fail:
-        // if this breaks, every user on that platform gets a panic at startup.
         let platform = Platform::detect().expect("this platform is supported");
         assert!(
             platform.is_linux() || platform.is_macos() || platform.system == "windows",
@@ -311,8 +307,6 @@ mod tests {
     fn linux_resolves_its_distribution() {
         let platform = Platform::linux();
         assert!(platform.is_linux());
-        // Whether the machine has os-release or not, the field exists and the
-        // accessors work.
         let _ = platform.display_name();
     }
 
@@ -351,8 +345,6 @@ mod tests {
 
     #[test]
     fn a_macos_context_does_not_claim_a_package_manager() {
-        // dwarp's os_info reports brew for macOS, which is right, but reporting
-        // it as a "distribution" is not.
         let context = Platform::macos().prompt_context();
         assert!(context.contains("macos"));
         assert!(!context.contains("package manager"));

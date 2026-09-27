@@ -160,9 +160,6 @@ pub fn find_key_in_env(provider: &str, variables: &EnvironmentVariables) -> Opti
         });
     }
 
-    // Fall back to any conventional variable that is set and non-empty. This
-    // makes `SHX_PROVIDER=anthropic` work when the user exported
-    // `ANTHROPIC_API_KEY` under a name we do not map exactly.
     api_key_variable_names().iter().find_map(|name| {
         let value = variables.get(*name)?;
         (!value.trim().is_empty()).then(|| ResolvedApiKey {

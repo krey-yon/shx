@@ -177,8 +177,6 @@ mod tests {
 
     #[test]
     fn a_signalled_process_is_not_a_success() {
-        // exit_code is None, not Some(0). Reporting a killed process as
-        // successful is how a timeout silently looks like a passing test.
         assert!(!result(None, "", "").succeeded());
     }
 
@@ -201,8 +199,6 @@ mod tests {
 
     #[test]
     fn trailing_newlines_are_trimmed_so_blocks_do_not_drift() {
-        // A trailing newline on both streams would otherwise print a blank line
-        // between every command's output and the next prompt.
         assert_eq!(
             result(Some(0), "out\n\n", "err\n").combined_output(),
             "out\nerr"

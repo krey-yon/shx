@@ -169,8 +169,6 @@ mod tests {
 
     #[test]
     fn an_unknown_key_is_rejected_rather_than_silently_ignored() {
-        // A typo in a config file should be loud: silently using the default is
-        // how you end up debugging why your model override did nothing.
         let result = serde_json::from_str::<Settings>(r#"{"providerr":"ollama"}"#);
         assert!(result.is_err());
     }

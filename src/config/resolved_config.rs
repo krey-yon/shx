@@ -193,8 +193,6 @@ fn collect_api_keys() -> Result<StoredApiKeys> {
 
     let mut keys = stored;
     for (provider, key) in environment_api_keys() {
-        // The environment wins: exporting a key is the documented way to opt
-        // out of storing one.
         keys.insert(provider, key);
     }
     Ok(keys)
@@ -286,8 +284,6 @@ mod tests {
 
     #[test]
     fn a_zero_timeout_is_rejected() {
-        // Zero would mean every command is killed instantly, which looks like a
-        // hung terminal rather than a misconfiguration.
         let error = ResolvedConfig::from_parts(
             Settings {
                 command_timeout_seconds: 0,
@@ -307,8 +303,6 @@ mod tests {
         config.apply_overrides(None, None, true).expect("verbose");
         assert!(config.settings.verbose_logging);
 
-        // There is no --no-verbose: a later invocation that forgets the flag
-        // must not turn logging back off for a config file that asked for it.
         config.apply_overrides(None, None, false).expect("no flags");
         assert!(
             config.settings.verbose_logging,

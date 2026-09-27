@@ -10,9 +10,11 @@
 pub mod command_catalogue;
 pub mod command_classifier;
 pub mod command_runner;
+pub mod command_splitter;
 pub mod execution_result;
 pub mod metacharacter_detector;
 pub mod path_hint_classifier;
+pub mod placeholder_scanner;
 pub mod working_directory;
 
 pub use command_catalogue::{
@@ -24,4 +26,5 @@ pub use command_classifier::{
 pub use execution_result::ExecutionResult;
 pub use metacharacter_detector::contains_metacharacter;
 pub use path_hint_classifier::{looks_like_path, looks_like_script};
+pub use placeholder_scanner::has_placeholder;
 pub use working_directory::WorkingDirectory;

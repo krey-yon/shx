@@ -112,8 +112,6 @@ fn set_owner_only_permissions(path: &Path) -> Result<()> {
 
 #[cfg(not(unix))]
 fn set_owner_only_permissions(_path: &Path) -> Result<()> {
-    // Windows has no POSIX mode bits; the file inherits the user's ACL, which
-    // already excludes other accounts. Nothing portable to do here.
     Ok(())
 }
 

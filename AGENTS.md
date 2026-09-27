@@ -33,8 +33,18 @@ warnings, so a new public item without a doc comment fails the build.
   `shell/classify.rs`. `safety/safety_analyzer.rs`, not `safety/analyser.rs`.
 - **One concern per module.** A module that both classifies and executes
   commands is two modules. When in doubt, split and pass the value across.
+- **Keep files small: 300 lines of code, excluding the `#[cfg(test)]` module.**
+  A `#[cfg(test)] mod tests` may be as long as the tests need. If the code
+  exceeds the cap, that is the module wanting to be two modules — split it
+  rather than compressing it.
+- **Comment sparingly.** A comment that restates the line below it is noise. Keep
+  one only where the *why* is not derivable from the code: a rule the code
+  cannot state, a constraint inherited from a platform or a protocol, a decision
+  that looks wrong until you know the reason. Never narrate the control flow.
 - **Tests live next to the code they test** in a `#[cfg(test)] mod tests`. Only
   end-to-end REPL flows go in `tests/`.
+- **Doc comments (`///`) are required on public items** — `missing_docs` is a
+  build failure. Inline `//` comments are held to the standard above.
 - **No new dependencies** without a reason written in the commit body. The
   manifest is deliberately small.
 - **No `unwrap` or `expect` outside `#[cfg(test)]`.** `expect_used` and

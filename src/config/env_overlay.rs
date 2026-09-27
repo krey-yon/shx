@@ -251,8 +251,6 @@ mod tests {
 
     #[test]
     fn an_empty_model_deliberately_clears_back_to_the_provider_default() {
-        // This one is intentional rather than an oversight: "no model" is a
-        // meaningful state, and it is how a user undoes a model set in the file.
         let from_file = Settings {
             model: "gemini-2.5-flash".to_owned(),
             ..Settings::default()
@@ -264,8 +262,6 @@ mod tests {
 
     #[test]
     fn an_empty_number_is_an_error_not_a_silent_zero() {
-        // The opposite of the model case: an empty numeric value is always a
-        // mistake, and defaulting it to 0 would mean "no tokens" or "no timeout".
         for variable in [
             "SHX_MAX_TOKENS",
             "SHX_TEMPERATURE",

@@ -4,6 +4,7 @@
 use std::fmt;
 
 use crate::error::{Result, ShxError};
+use crate::platform::package_commands;
 
 /// A Linux distribution, grouped by the package manager it uses.
 ///
@@ -115,9 +116,6 @@ impl Distribution {
             "fedora" | "rhel" | "rhel9" | "redhat" | "rocky" | "almalinux" | "alma" | "centos"
             | "ol" | "oracle" | "amzn" | "amazon" | "nobara" => Self::Dnf,
 
-            // CentOS 7 and RHEL 7 ship a yum that is not dnf. Distinguished by
-            // the major version, which classify() does not see, so the release
-            // check in the platform module is what picks between them.
             "centos7" | "rhel7" => Self::Yum,
 
             "arch" | "archarm" | "manjaro" | "endeavouros" | "endeavour" | "artix" | "cachyos" => {
@@ -155,19 +153,19 @@ impl Distribution {
     /// ```
     #[must_use]
     pub fn install(self, package: &str) -> String {
-        format!("{} {package}", self.install_prefix())
+        format!("{} {package}", package_commands::install_prefix(self))
     }
 
     /// The command that updates the package index.
     #[must_use]
     pub fn update(self) -> String {
-        self.update_command().to_owned()
+        package_commands::update_command(self).to_owned()
     }
 
     /// The command that upgrades installed packages.
     #[must_use]
     pub fn upgrade(self) -> String {
-        self.upgrade_command().to_owned()
+        package_commands::upgrade_command(self).to_owned()
     }
 
     /// The command that removes a package.
@@ -184,7 +182,7 @@ impl Distribution {
     /// ```
     #[must_use]
     pub fn remove(self, package: &str) -> String {
-        format!("{} {package}", self.remove_prefix())
+        format!("{} {package}", package_commands::remove_prefix(self))
     }
 
     /// The executable name, for display and for looking it up on `PATH`.
@@ -275,70 +273,6 @@ impl Distribution {
             distro: name.to_owned(),
         })
     }
-
-    fn install_prefix(self) -> &'static str {
-        match self {
-            Self::Debian => "sudo apt install",
-            Self::Dnf => "sudo dnf install",
-            Self::Yum => "sudo yum install",
-            Self::Pacman => "sudo pacman -S",
-            Self::Zypper => "sudo zypper install",
-            Self::Emerge => "sudo emerge",
-            Self::Nix => "nix-env -iA",
-            Self::Xbps => "sudo xbps-install -S",
-            Self::Pkg => "sudo pkg install",
-            Self::Alpine => "sudo apk add",
-            Self::Unknown => "unknown",
-        }
-    }
-
-    fn update_command(self) -> &'static str {
-        match self {
-            Self::Debian => "sudo apt update",
-            Self::Dnf => "sudo dnf check-update",
-            Self::Yum => "sudo yum check-update",
-            Self::Pacman => "sudo pacman -Sy",
-            Self::Zypper => "sudo zypper refresh",
-            Self::Emerge => "sudo emerge --update --deep",
-            Self::Nix => "nix-channel --update",
-            Self::Xbps => "sudo xbps-install -S",
-            Self::Pkg => "sudo pkg update",
-            Self::Alpine => "sudo apk update",
-            Self::Unknown => "unknown",
-        }
-    }
-
-    fn upgrade_command(self) -> &'static str {
-        match self {
-            Self::Debian => "sudo apt upgrade",
-            Self::Dnf => "sudo dnf upgrade",
-            Self::Yum => "sudo yum update",
-            Self::Pacman => "sudo pacman -Syu",
-            Self::Zypper => "sudo zypper update",
-            Self::Emerge => "sudo emerge --update --deep @world",
-            Self::Nix => "nix-env -u",
-            Self::Xbps => "sudo xbps-install -Syu",
-            Self::Pkg => "sudo pkg upgrade",
-            Self::Alpine => "sudo apk upgrade",
-            Self::Unknown => "unknown",
-        }
-    }
-
-    fn remove_prefix(self) -> &'static str {
-        match self {
-            Self::Debian => "sudo apt remove",
-            Self::Dnf => "sudo dnf remove",
-            Self::Yum => "sudo yum remove",
-            Self::Pacman => "sudo pacman -R",
-            Self::Zypper => "sudo zypper remove",
-            Self::Emerge => "sudo emerge --unmerge",
-            Self::Nix => "nix-env -e",
-            Self::Xbps => "sudo xbps-remove",
-            Self::Pkg => "sudo pkg delete",
-            Self::Alpine => "sudo apk del",
-            Self::Unknown => "unknown",
-        }
-    }
 }
 
 impl fmt::Display for Distribution {
@@ -416,8 +350,6 @@ mod tests {
 
     #[test]
     fn an_unknown_distribution_says_so_rather_than_guessing() {
-        // dwarp's version of this returned "unknown <package>" for an unknown
-        // distro, which reads like a command the user could run.
         let unknown = Distribution::Unknown;
         assert!(!unknown.is_supported());
         assert_eq!(unknown.package_manager(), "unknown");
@@ -450,8 +382,6 @@ mod tests {
 
     #[test]
     fn id_like_inheritance_covers_derivatives_with_no_entry() {
-        // These ids are not in the table on purpose: they are reached through
-        // ID_LIKE, which is how distributions actually report ancestry.
         for (id, parent, expected) in [
             ("steamos", "arch", Distribution::Pacman),
             ("pop", "ubuntu", Distribution::Debian),
@@ -468,8 +398,6 @@ mod tests {
 
     #[test]
     fn a_direct_id_beats_id_like() {
-        // Alpine reports ID_LIKE containing other things in some releases; its
-        // own ID must still win.
         assert_eq!(
             Distribution::classify("alpine", Some("arch")),
             Distribution::Alpine
@@ -487,8 +415,6 @@ mod tests {
 
     #[test]
     fn update_and_upgrade_differ_for_arch() {
-        // pacman separates the two; most other families do not. Getting this
-        // wrong suggests a partial upgrade, which pacman warns about.
         assert_eq!(Distribution::Pacman.update(), "sudo pacman -Sy");
         assert_eq!(Distribution::Pacman.upgrade(), "sudo pacman -Syu");
     }

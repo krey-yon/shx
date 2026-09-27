@@ -126,9 +126,6 @@ impl Prompter for TerminalPrompter {
             self.show_notice = false;
         }
 
-        // A key is not echoed: this goes through the terminal directly rather
-        // than through the styled output path, which is the only reliable way
-        // to keep it off the screen.
         if secret {
             print!("{question}");
             let _ = std::io::stdout().flush();
@@ -161,10 +158,6 @@ fn read_line() -> Result<String> {
 
 #[cfg(unix)]
 fn read_secret_line() -> Result<String> {
-    // Termios manipulation needs libc or a crate to do it portably. Rather than
-    // add a dependency for one call, the key is read with echo left on and the
-    // caller is told: hiding it is a nicety, storing a credential the user typed
-    // by hand is not worth a new dependency.
     read_line()
 }
 
@@ -262,10 +255,6 @@ mod tests {
 
     #[test]
     fn the_question_is_asked_the_expected_number_of_times() {
-        // "short" is five characters, which is under the floor; "long-enough-key"
-        // is not. Keep the short answers genuinely short: an earlier version of
-        // this test used "still-short", which is eleven characters and was
-        // therefore accepted on the second ask.
         let mut source = RecordingPrompter::new(&["short", "nope", "long-enough-key"]);
         prompt_for_api_key(&mut source).expect("a key");
         assert_eq!(source.questions.len(), 3);
@@ -288,8 +277,6 @@ mod tests {
 
     #[test]
     fn the_notice_mentions_the_alternative_of_an_env_var() {
-        // The point of the notice is that a user can opt out of storing a
-        // credential, so it has to actually say how.
         let notice = super::api_key_notice();
         assert!(notice.contains("GEMINI_API_KEY"));
         assert!(notice.contains("ANTHROPIC_API_KEY"));

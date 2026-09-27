@@ -298,9 +298,6 @@ mod tests {
 
     #[test]
     fn the_table_is_sorted_by_name() {
-        // binary_search_by is only correct on a sorted table, and a table that
-        // is accidentally unsorted gives wrong answers with no error. This is
-        // the assertion that makes that impossible to ship.
         for pair in COMMANDS.windows(2) {
             assert!(
                 pair[0].name < pair[1].name,
@@ -387,8 +384,6 @@ mod tests {
 
     #[test]
     fn git_is_filed_under_development_not_containers() {
-        // git is the single most-typed command in the table; misfiling it
-        // would show up in completions.
         assert_eq!(command_category("git"), Some(Category::Development));
     }
 

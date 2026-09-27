@@ -20,8 +20,6 @@
 //! - `error` — the single error type shared by the library.
 
 #![warn(rustdoc::broken_intra_doc_links)]
-// Tests are allowed to panic; library code is not. See the `[lints.clippy]`
-// section of the manifest for the reasoning.
 #![cfg_attr(
     test,
     allow(clippy::unwrap_used, clippy::expect_used, clippy::expect_fun_call)

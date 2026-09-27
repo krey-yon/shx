@@ -9,6 +9,7 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 
 use crate::error::{Result, ShxError};
+use crate::shell::command_splitter::split_command;
 use crate::shell::execution_result::ExecutionResult;
 
 /// How a command should be run.
@@ -60,93 +61,6 @@ impl RunRequest {
         self.attach_stdin = true;
         self
     }
-}
-
-/// Split a command line into a program and its arguments.
-///
-/// A hand-rolled splitter rather than a shell, deliberately. Going through
-/// `sh -c` would make every command a shell script, which means quoting rules
-/// the safety analyser would then have to reason about, and it would let a
-/// suggested command run as arbitrary shell. Splitting here means what the user
-/// sees is what runs.
-///
-/// Handles single quotes, double quotes and backslash escapes, which covers
-/// every command in the catalogue and most of what a model suggests.
-///
-/// # Examples
-///
-/// ```
-/// use shx::shell::command_runner::split_command;
-///
-/// assert_eq!(split_command("ls -la"), vec!["ls", "-la"]);
-/// assert_eq!(split_command("grep 'a b' file"), vec!["grep", "a b", "file"]);
-/// assert_eq!(split_command(r#"echo "hi there""#), vec!["echo", "hi there"]);
-/// ```
-#[must_use]
-pub fn split_command(command: &str) -> Vec<String> {
-    let mut words = Vec::new();
-    let mut current = String::new();
-    let mut has_word = false;
-    let mut characters = command.chars();
-
-    while let Some(character) = characters.next() {
-        match character {
-            // A backslash escapes the next character literally, inside or out
-            // of quotes. This is the same rule the shell uses, and models
-            // produce it out of habit.
-            '\\' => {
-                has_word = true;
-                if let Some(escaped) = characters.next() {
-                    current.push(escaped);
-                }
-            }
-
-            '\'' => {
-                has_word = true;
-                for next in characters.by_ref() {
-                    if next == '\'' {
-                        break;
-                    }
-                    current.push(next);
-                }
-            }
-
-            '"' => {
-                has_word = true;
-                while let Some(next) = characters.next() {
-                    match next {
-                        '"' => break,
-                        // Backslash escapes only work for these inside double
-                        // quotes, matching the shell.
-                        '\\' => {
-                            if let Some(escaped) = characters.next() {
-                                current.push(escaped);
-                            }
-                        }
-                        other => current.push(other),
-                    }
-                }
-            }
-
-            character if character.is_whitespace() => {
-                if has_word {
-                    words.push(std::mem::take(&mut current));
-                    has_word = false;
-                }
-            }
-
-            other => {
-                has_word = true;
-                current.push(other);
-            }
-        }
-    }
-
-    if has_word {
-        words.push(current);
-    }
-
-    words
 }
 
 /// Run a command and capture its output.
@@ -266,62 +180,11 @@ fn is_executable(path: &Path) -> bool {
 mod tests {
     use std::time::Duration;
 
-    use super::{RunRequest, is_on_path, run_command, split_command, which};
+    use super::{RunRequest, is_on_path, run_command, which};
     use crate::error::ShxError;
 
     fn run(command: &str) -> crate::error::Result<crate::shell::execution_result::ExecutionResult> {
         run_command(&RunRequest::new(command, Duration::from_secs(10)))
-    }
-
-    #[test]
-    fn plain_words_split_on_whitespace() {
-        assert_eq!(split_command("ls -la /tmp"), vec!["ls", "-la", "/tmp"]);
-    }
-
-    #[test]
-    fn runs_of_whitespace_collapse() {
-        assert_eq!(split_command("  ls   -la  "), vec!["ls", "-la"]);
-        assert_eq!(split_command("ls\t-la"), vec!["ls", "-la"]);
-    }
-
-    #[test]
-    fn single_quotes_group_words() {
-        assert_eq!(
-            split_command("grep 'a b' file"),
-            vec!["grep", "a b", "file"]
-        );
-    }
-
-    #[test]
-    fn double_quotes_group_words() {
-        assert_eq!(
-            split_command(r#"echo "hi there""#),
-            vec!["echo", "hi there"]
-        );
-    }
-
-    #[test]
-    fn backslash_escapes_the_next_character() {
-        assert_eq!(split_command(r"echo a\ b"), vec!["echo", "a b"]);
-    }
-
-    #[test]
-    fn an_empty_quoted_string_is_still_a_word() {
-        // `echo ""` must pass one empty argument, not zero.
-        assert_eq!(split_command(r#"echo """#), vec!["echo", ""]);
-        assert_eq!(split_command("echo ''"), vec!["echo", ""]);
-    }
-
-    #[test]
-    fn an_unterminated_quote_does_not_lose_the_word() {
-        let words = split_command(r#"echo "unterminated"#);
-        assert_eq!(words, vec!["echo", "unterminated"]);
-    }
-
-    #[test]
-    fn empty_input_splits_to_nothing() {
-        assert!(split_command("").is_empty());
-        assert!(split_command("    ").is_empty());
     }
 
     #[test]
@@ -341,7 +204,6 @@ mod tests {
 
     #[test]
     fn a_non_zero_exit_is_a_result_not_an_error() {
-        // `false` ran successfully. The caller decides what exit 1 means.
         let result = run("sh -c 'exit 3'").expect("the process should start");
         assert!(!result.succeeded());
         assert_eq!(result.exit_code, Some(3));
@@ -371,8 +233,6 @@ mod tests {
             .in_directory(temporary.path().to_string_lossy().into_owned());
 
         let result = run_command(&request).expect("pwd should run");
-        // macOS reports /private/var for /var, so compare the resolved paths
-        // rather than the strings.
         let reported =
             std::fs::canonicalize(result.stdout.trim()).expect("pwd should print a real path");
         let expected = std::fs::canonicalize(temporary.path()).expect("the temp dir should exist");
@@ -413,7 +273,6 @@ mod tests {
 
     #[test]
     fn a_path_with_a_separator_is_checked_directly() {
-        // A path containing a separator is not searched for; it is used as given.
         assert!(matches!(which("/bin/sh"), Some(found) if found == "/bin/sh"));
         assert!(which("/bin/definitely-not-here").is_none());
     }

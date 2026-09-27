@@ -95,9 +95,6 @@ mod tests {
 
     #[test]
     fn path_ends_in_config_json() {
-        // SHX_CONFIG may be set in the developer's environment; the assertion
-        // holds either way because a configured override is expected to be a
-        // json file too.
         let path = config_path().expect("a config path should resolve");
         assert!(
             path.ends_with("config.json"),

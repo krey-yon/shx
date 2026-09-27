@@ -202,8 +202,6 @@ mod tests {
 
     #[test]
     fn a_corrupt_file_is_empty_rather_than_fatal() {
-        // A half-written file from an interrupted first run must not stop the
-        // program from starting; the user re-enters the key.
         let directory = tempfile::tempdir().expect("a temp dir");
         let path = directory.path().join("credentials.json");
         fs::write(&path, "{ broken").expect("write should succeed");
@@ -252,9 +250,6 @@ mod tests {
 
     #[test]
     fn a_second_provider_does_not_clobber_the_first() {
-        // store_api_key and forget_api_key resolve the real home directory, so
-        // the merge behaviour they rely on is exercised through the
-        // path-taking helpers rather than a developer's real credentials.
         let directory = tempfile::tempdir().expect("a temp dir");
         let path = directory.path().join("credentials.json");
 

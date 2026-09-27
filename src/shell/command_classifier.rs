@@ -62,14 +62,10 @@ pub fn classify_input(input: &str) -> InputKind {
 
     let first_word = trimmed.split_whitespace().next().unwrap_or(trimmed);
 
-    // An absolute or explicitly relative path is the strongest signal there is:
-    // the user wrote where the thing is.
     if looks_like_path(trimmed) {
         return InputKind::Command;
     }
 
-    // A known command name at the start, with no leading word that would make
-    // it an argument to something else.
     if is_known_command(first_word) {
         return InputKind::Command;
     }
@@ -211,14 +207,11 @@ mod tests {
 
     #[test]
     fn a_path_wins_over_a_request_shaped_word() {
-        // "what" is a question word but "./what" is a file.
         assert_eq!(classify_input("./what"), InputKind::Command);
     }
 
     #[test]
     fn a_sentence_containing_a_word_that_is_a_command_is_still_a_request() {
-        // `install` is a real command, but as the first word of this sentence
-        // it is an English verb.
         assert_eq!(classify_input("install ripgrep for me"), InputKind::Request);
     }
 
