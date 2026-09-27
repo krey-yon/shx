@@ -13,6 +13,7 @@ pub mod command_runner;
 pub mod execution_result;
 pub mod metacharacter_detector;
 pub mod path_hint_classifier;
+pub mod working_directory;
 
 pub use command_catalogue::{
     COMMANDS, Category, category_names, command_category, is_known_command,
@@ -23,3 +24,4 @@ pub use command_classifier::{
 pub use execution_result::ExecutionResult;
 pub use metacharacter_detector::contains_metacharacter;
 pub use path_hint_classifier::{looks_like_path, looks_like_script};
+pub use working_directory::WorkingDirectory;
