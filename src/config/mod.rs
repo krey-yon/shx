@@ -3,6 +3,7 @@
 pub mod config_path;
 pub mod config_writer;
 pub mod credentials;
+pub mod credentials_file;
 pub mod env_overlay;
 pub mod prompter;
 pub mod settings;
@@ -10,6 +11,7 @@ pub mod settings;
 pub use config_path::{config_directory, config_path};
 pub use config_writer::{load_config, load_config_from, write_config, write_config_to};
 pub use credentials::ApiKey;
+pub use credentials_file::{load_credentials, store_api_key, write_credentials};
 pub use env_overlay::{api_key_variable_names, apply_env_overrides};
 pub use prompter::{FixedPrompter, Prompter};
 pub use settings::Settings;
