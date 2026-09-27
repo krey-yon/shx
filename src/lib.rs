@@ -3,7 +3,7 @@
 //! decides whether it is a shell command or a natural-language request, and for
 //! the latter asks a large language model what to do next.
 //! The crate is split into modules that each own one concern:
-//! - `config` — settings, their file location, and how environment variables
+//! - [`config`](mod@config) — settings, their file location, and how environment variables
 //!   layer on top of them.
 //! - `platform` — which operating system and distribution we are on, and what
 //!   its package manager commands look like.
@@ -20,7 +20,14 @@
 //! - `error` — the single error type shared by the library.
 
 #![warn(rustdoc::broken_intra_doc_links)]
+// Tests are allowed to panic; library code is not. See the `[lints.clippy]`
+// section of the manifest for the reasoning.
+#![cfg_attr(
+    test,
+    allow(clippy::unwrap_used, clippy::expect_used, clippy::expect_fun_call)
+)]
 
+pub mod config;
 pub mod error;
 
 /// The version of the `shx` binary, taken from the crate manifest.
