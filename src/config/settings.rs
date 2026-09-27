@@ -40,6 +40,10 @@ pub struct Settings {
     /// Whether to render model replies as markdown rather than plain text.
     pub render_markdown: bool,
 
+    /// Whether to log debug detail to stderr. Off unless `--verbose` is passed,
+    /// because log output interleaves badly with a line editor.
+    pub verbose_logging: bool,
+
     /// Whether `shx` remembers earlier turns of the conversation and sends them
     /// to the provider.
     pub remember_conversation: bool,
@@ -59,6 +63,7 @@ impl Default for Settings {
             temperature: 0.7,
             command_timeout_seconds: 120,
             render_markdown: true,
+            verbose_logging: false,
             remember_conversation: true,
             conversation_history_turns: 10,
         }
@@ -179,6 +184,7 @@ mod tests {
             temperature: 0.2,
             command_timeout_seconds: 30,
             render_markdown: false,
+            verbose_logging: true,
             remember_conversation: false,
             conversation_history_turns: 3,
         };
