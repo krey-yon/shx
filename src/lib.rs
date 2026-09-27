@@ -7,7 +7,7 @@
 //!   layer on top of them.
 //! - [`platform`](mod@platform) — which operating system and distribution we are on, and what
 //!   its package manager commands look like.
-//! - `shell` — the catalogue of known commands, the classifier that decides
+//! - [`shell`](mod@shell) — the catalogue of known commands, the classifier that decides
 //!   whether input is a command, and the runner that executes it.
 //! - `safety` — risk classification and confirmation policy for commands that
 //!   could destroy data.
@@ -30,6 +30,7 @@
 pub mod config;
 pub mod error;
 pub mod platform;
+pub mod shell;
 
 /// The version of the `shx` binary, taken from the crate manifest.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
