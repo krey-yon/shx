@@ -25,11 +25,15 @@
     allow(clippy::unwrap_used, clippy::expect_used, clippy::expect_fun_call)
 )]
 
+pub mod app;
 pub mod config;
 pub mod error;
+pub mod llm;
 pub mod platform;
+pub mod response;
 pub mod safety;
 pub mod shell;
+pub mod tui;
 
 /// The version of the `shx` binary, taken from the crate manifest.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
