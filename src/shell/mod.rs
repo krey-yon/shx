@@ -27,4 +27,4 @@ pub use execution_result::ExecutionResult;
 pub use metacharacter_detector::contains_metacharacter;
 pub use path_hint_classifier::{looks_like_path, looks_like_script};
 pub use placeholder_scanner::has_placeholder;
-pub use working_directory::WorkingDirectory;
+pub use working_directory::{WorkingDirectory, cd_target};
