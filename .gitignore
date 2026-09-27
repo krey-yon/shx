@@ -7,6 +7,9 @@
 # Reinstall with: git clone --depth 1 https://github.com/leonardomso/rust-skills.git .opencode/skills/rust-skills
 /.opencode/skills/
 
+# Reference material for the port, not project source
+/project.md
+
 # Local config and secrets
 *.env
 .env
