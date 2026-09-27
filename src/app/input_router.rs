@@ -86,7 +86,7 @@ impl Routed {
 /// ```
 /// use shx::app::input_router::{Routed, route};
 /// use shx::app::session_state::SessionState;
-/// use shx::config::ResolvedConfig;
+/// use shx::config::{ResolvedConfig, Settings, credentials_file::StoredApiKeys};
 /// use shx::shell::WorkingDirectory;
 ///
 /// let config = ResolvedConfig::from_parts(Settings::default(), StoredApiKeys::new())

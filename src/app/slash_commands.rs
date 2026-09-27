@@ -86,7 +86,7 @@ impl SlashCommand {
     /// use shx::app::slash_commands::SlashCommand;
     ///
     /// assert_eq!(SlashCommand::Help.name(), "help");
-    /// assert_eq!(SlashCommand::Exit.name(), "quit");
+    /// assert_eq!(SlashCommand::Exit.name(), "exit");
     /// ```
     #[must_use]
     pub fn name(&self) -> &str {
