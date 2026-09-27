@@ -3,21 +3,21 @@
 //! decides whether it is a shell command or a natural-language request, and for
 //! the latter asks a large language model what to do next.
 //! The crate is split into modules that each own one concern:
-//! - [`config`](mod@config) — settings, their file location, and how environment variables
+//! - `config` — settings, their file location, and how environment variables
 //!   layer on top of them.
-//! - [`platform`](mod@platform) — which operating system and distribution we are on, and what
+//! - `platform` — which operating system and distribution we are on, and what
 //!   its package manager commands look like.
-//! - [`shell`](mod@shell) — the catalogue of known commands, the classifier that decides
+//! - `shell` — the catalogue of known commands, the classifier that decides
 //!   whether input is a command, and the runner that executes it.
-//! - [`safety`](mod@safety) — risk classification and confirmation policy for commands that
+//! - `safety` — risk classification and confirmation policy for commands that
 //!   could destroy data.
-//! - [`placeholder`](mod@placeholder) — detection of unfilled template placeholders in a command.
-//! - [`response`](mod@response) — the typed shapes an agent can return.
-//! - [`llm`](mod@llm) — provider abstraction, the three specialised agents, and their
+//! - `placeholder` — detection of unfilled template placeholders in a command.
+//! - `response` — the typed shapes an agent can return.
+//! - `llm` — provider abstraction, the three specialised agents, and their
 //!   prompts.
-//! - [`tui`](mod@tui) — terminal rendering: theme, spinner, markdown, line editing.
-//! - [`app`](mod@app) — orchestration: the REPL loop and the flows it drives.
-//! - [`error`](mod@error) — the single error type shared by the library.
+//! - `tui` — terminal rendering: theme, spinner, markdown, line editing.
+//! - `app` — orchestration: the REPL loop and the flows it drives.
+//! - `error` — the single error type shared by the library.
 
 #![warn(rustdoc::broken_intra_doc_links)]
 

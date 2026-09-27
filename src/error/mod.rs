@@ -2,7 +2,7 @@
 //!
 //! See [`shx_error`] for the enum and its semantics.
 
-mod shx_error;
+pub mod shx_error;
 
 pub use shx_error::ShxError;
 
