@@ -9,3 +9,8 @@ pub mod reedline_session;
 pub mod spinner;
 pub mod terminal_width;
 pub mod theme;
+
+pub use completion_engine::CompletionEngine;
+pub use fuzzy_matcher::FuzzyMatcher;
+pub use markdown_renderer::render;
+pub use theme::Theme;
