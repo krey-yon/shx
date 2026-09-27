@@ -9,6 +9,8 @@
 
 pub mod command_catalogue;
 pub mod command_classifier;
+pub mod command_runner;
+pub mod execution_result;
 pub mod metacharacter_detector;
 pub mod path_hint_classifier;
 
@@ -18,5 +20,6 @@ pub use command_catalogue::{
 pub use command_classifier::{
     InputKind, classify_input, first_word, is_directory_change, is_screen_clear, is_session_exit,
 };
+pub use execution_result::ExecutionResult;
 pub use metacharacter_detector::contains_metacharacter;
 pub use path_hint_classifier::{looks_like_path, looks_like_script};
