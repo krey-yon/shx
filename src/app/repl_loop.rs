@@ -171,8 +171,6 @@ mod tests {
 
     #[test]
     fn end_of_input_ends_the_loop_cleanly() {
-        // The prompt is written before the read, so there is output, but no
-        // command ran and no error was reported.
         let output = drive(&mut app(), &[], false);
         assert!(output.contains("> "), "got {output:?}");
         assert!(!output.to_lowercase().contains("error"), "got {output:?}");

@@ -235,16 +235,12 @@ mod tests {
 
     #[test]
     fn an_unknown_flag_is_an_error_and_not_an_exit() {
-        // This is why the tests use try_parse_from: a bad flag must return, not
-        // call std::process::exit and take the test runner with it.
         let error = CliArgs::try_parse_from(["shx", "--nope"]).expect_err("unknown flag");
         assert_eq!(error.kind(), ErrorKind::UnknownArgument);
     }
 
     #[test]
     fn a_bare_word_is_a_request_not_an_unknown_subcommand() {
-        // Only the four real subcommands are subcommands. Anything else is the
-        // one-shot request, so `shx install ripgrep` does what it looks like.
         let args = parse(&["nope"]);
         assert_eq!(args.request.as_deref(), Some("nope"));
         assert!(args.command.is_none());
@@ -259,9 +255,6 @@ mod tests {
 
     #[test]
     fn a_subcommand_takes_no_bare_request() {
-        // A subcommand is a subcommand: `shx config show` takes no positional,
-        // and silently ignoring an extra word would run something the user did
-        // not ask for.
         let error = CliArgs::try_parse_from(["shx", "config", "show", "ls"])
             .expect_err("a subcommand takes no positional");
         assert!(error.to_string().contains("ls"));
