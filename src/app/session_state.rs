@@ -25,7 +25,7 @@ impl SessionState {
     ///
     /// ```
     /// use shx::app::session_state::SessionState;
-    /// use shx::config::ResolvedConfig;
+    /// use shx::config::{ResolvedConfig, Settings, credentials_file::StoredApiKeys};
     /// use shx::shell::WorkingDirectory;
     ///
     /// let config = ResolvedConfig::from_parts(Settings::default(), StoredApiKeys::new())
@@ -84,7 +84,7 @@ impl SessionState {
     ///
     /// ```
     /// use shx::app::session_state::SessionState;
-    /// use shx::config::ResolvedConfig;
+    /// use shx::config::{ResolvedConfig, Settings, credentials_file::StoredApiKeys};
     /// use shx::shell::WorkingDirectory;
     ///
     /// let config = ResolvedConfig::from_parts(Settings::default(), StoredApiKeys::new())
